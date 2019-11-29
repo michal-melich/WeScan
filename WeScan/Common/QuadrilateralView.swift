@@ -19,8 +19,9 @@ enum CornerPosition {
 
 /// The `QuadrilateralView` is a simple `UIView` subclass that can draw a quadrilateral, and optionally edit it.
 final class QuadrilateralView: UIView {
-    
+
     private let quadLayer: CAShapeLayer = {
+        
         let layer = CAShapeLayer()
         layer.strokeColor = UIColor.white.cgColor
         layer.lineWidth = 1.0
@@ -45,7 +46,7 @@ final class QuadrilateralView: UIView {
     public var editable = false {
         didSet {
             cornerViews(hidden: !editable)
-            quadLayer.fillColor = editable ? UIColor(white: 0.0, alpha: 0.6).cgColor : UIColor(white: 1.0, alpha: 0.5).cgColor
+            quadLayer.fillColor = editable ? UIColor(white: 0.0, alpha: 0.6).cgColor : self.tintColor.withAlphaComponent(0.3).cgColor
             guard let quad = quad else {
                 return
             }
@@ -64,19 +65,19 @@ final class QuadrilateralView: UIView {
         }
     }
     
-    lazy private var topLeftCornerView: EditScanCornerView = {
+    private lazy var topLeftCornerView: EditScanCornerView = {
         return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .topLeft)
     }()
     
-    lazy private var topRightCornerView: EditScanCornerView = {
+    private lazy var topRightCornerView: EditScanCornerView = {
         return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .topRight)
     }()
     
-    lazy private var bottomRightCornerView: EditScanCornerView = {
+    private lazy var bottomRightCornerView: EditScanCornerView = {
         return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .bottomRight)
     }()
     
-    lazy private var bottomLeftCornerView: EditScanCornerView = {
+    private lazy var bottomLeftCornerView: EditScanCornerView = {
         return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .bottomLeft)
     }()
     
@@ -90,7 +91,7 @@ final class QuadrilateralView: UIView {
         commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -99,6 +100,7 @@ final class QuadrilateralView: UIView {
         setupCornerViews()
         setupConstraints()
         quadView.layer.addSublayer(quadLayer)
+        quadLayer.strokeColor = self.tintColor.cgColor
     }
     
     private func setupConstraints() {
@@ -129,6 +131,12 @@ final class QuadrilateralView: UIView {
         if let quad = quad {
             drawQuadrilateral(quad: quad, animated: false)
         }
+    }
+    
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        self.quadLayer.strokeColor = self.tintColor.cgColor
+        self.quadLayer.fillColor = editable ? UIColor(white: 0.0, alpha: 0.6).cgColor : self.tintColor.withAlphaComponent(0.3).cgColor
     }
     
     // MARK: - Drawings
