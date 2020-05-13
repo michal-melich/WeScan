@@ -212,6 +212,7 @@ final class ScannerViewController: UIViewController {
         CaptureSession.current.removeFocusRectangleIfNeeded(focusRectangle, animated: false)
         
         focusRectangle = FocusRectangleView(touchPoint: touchPoint)
+        focusRectangle.isUserInteractionEnabled = false
         view.addSubview(focusRectangle)
         
         do {
