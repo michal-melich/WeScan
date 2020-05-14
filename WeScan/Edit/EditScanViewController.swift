@@ -30,6 +30,12 @@ final class EditScanViewController: UIViewController {
         return quadView
     }()
     
+    lazy private var doneButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(finishScan))
+        button.tintColor = navigationController?.navigationBar.tintColor
+        return button
+    }()
+    
     lazy private var nextButton: UIBarButtonItem = {
         let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
         let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(pushReviewController))
@@ -73,7 +79,7 @@ final class EditScanViewController: UIViewController {
         setupViews()
         setupConstraints()
         title = NSLocalizedString("wescan.edit.title", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Edit Scan", comment: "The title of the EditScanViewController")
-        navigationItem.rightBarButtonItem = nextButton
+        navigationItem.rightBarButtonItem = getRightNavigationButton()
         if let firstVC = self.navigationController?.viewControllers.first, firstVC == self {
           navigationItem.leftBarButtonItem = cancelButton
         } else {
@@ -136,14 +142,32 @@ final class EditScanViewController: UIViewController {
         }
     }
     
+    @objc private func finishScan() {
+        guard
+            let imageScannerController = navigationController as? ImageScannerController,
+            let results = getImageScannerResults()
+        else {
+            return
+        }
+        
+        imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: results)
+    }
+
+    
     @objc func pushReviewController() {
-        guard let quad = quadView.quad,
-            let ciImage = CIImage(image: image) else {
+        guard let results = getImageScannerResults() else { return }
+        
+        let reviewViewController = ReviewViewController(results: results)
+        navigationController?.pushViewController(reviewViewController, animated: true)
+    }
+
+    private func getImageScannerResults() -> ImageScannerResults? {
+        guard let quad = quadView.quad, let ciImage = CIImage(image: image) else {
                 if let imageScannerController = navigationController as? ImageScannerController {
                     let error = ImageScannerControllerError.ciImageCreation
                     imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
                 }
-                return
+                return nil
         }
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
@@ -168,8 +192,18 @@ final class EditScanViewController: UIViewController {
         
         let results = ImageScannerResults(detectedRectangle: scaledQuad, originalScan: ImageScannerScan(image: image), croppedScan: ImageScannerScan(image: croppedImage), enhancedScan: enhancedScan)
         
-        let reviewViewController = ReviewViewController(results: results)
-        navigationController?.pushViewController(reviewViewController, animated: true)
+        return results
+    }
+    
+    private func getRightNavigationButton() -> UIBarButtonItem? {
+        guard
+            let imageScannerController = navigationController as? ImageScannerController,
+            let shouldDisplayReview = imageScannerController.imageScannerDelegate?.imageScannerControllerShouldShowReviewController()
+        else {
+            return nil
+        }
+        
+        return shouldDisplayReview ? nextButton : doneButton
     }
 
     private func displayQuad() {
