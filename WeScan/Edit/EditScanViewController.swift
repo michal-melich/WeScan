@@ -105,6 +105,12 @@ final class EditScanViewController: UIViewController {
         // Work around for an iOS 11.2 bug where UIBarButtonItems don't get back to their normal state after being pressed.
         navigationController?.navigationBar.tintAdjustmentMode = .normal
         navigationController?.navigationBar.tintAdjustmentMode = .automatic
+        
+        if isMovingFromParent {
+            if let imageScannerController = navigationController as? ImageScannerController {
+                imageScannerController.imageScannerDelegate?.imageScannerControllerDidMoveBackToRetake()
+            }
+        }
     }
     
     // MARK: - Setups
