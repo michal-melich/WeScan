@@ -42,6 +42,19 @@ public final class CameraScannerViewController: UIViewController {
     /// Whether flash is enabled
     private var flashEnabled = false
     
+    private var strokeColor: UIColor?
+    private var fillColor: UIColor?
+    
+    public init(fillColor: UIColor = UIColor.white, strokeColor: UIColor? = UIColor.white) {
+        self.fillColor = fillColor
+        self.strokeColor = strokeColor
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -76,6 +89,8 @@ public final class CameraScannerViewController: UIViewController {
         view.layer.addSublayer(videoPreviewLayer)
         quadView.translatesAutoresizingMaskIntoConstraints = false
         quadView.editable = false
+        quadView.fillColor = self.fillColor?.cgColor
+        quadView.strokeColor = self.strokeColor?.cgColor
         view.addSubview(quadView)
         setupConstraints()
         

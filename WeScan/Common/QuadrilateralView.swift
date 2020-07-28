@@ -45,12 +45,18 @@ final class QuadrilateralView: UIView {
     public var editable = false {
         didSet {
             cornerViews(hidden: !editable)
-            quadLayer.fillColor = editable ? UIColor(white: 0.0, alpha: 0.6).cgColor : UIColor(white: 1.0, alpha: 0.5).cgColor
+            setFillColor()
             guard let quad = quad else {
                 return
             }
             drawQuad(quad, animated: false)
             layoutCornerViews(forQuad: quad)
+        }
+    }
+    
+    public var fillColor: CGColor? {
+        didSet {
+            setFillColor()
         }
     }
 
@@ -305,5 +311,9 @@ final class QuadrilateralView: UIView {
         case .bottomRight:
             return bottomRightCornerView
         }
+    }
+    
+    private func setFillColor() {
+        quadLayer.fillColor = editable ? UIColor(white: 0.0, alpha: 0.6).cgColor : fillColor?.copy(alpha: 0.5)
     }
 }
