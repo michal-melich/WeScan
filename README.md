@@ -1,28 +1,26 @@
 # WeScan
- 
+
 <p align="center">
     <img width="900px" src="Assets/WeScan-Banner.jpg">
 </p>
 
 <p align="center">
 <img src="https://app.bitrise.io/app/df00af454f27891d.svg?token=spjxNvzjnRqug6GfGM3_Lg"/>
-<img src="https://img.shields.io/cocoapods/v/WeScan.svg?style=flat"/>
 <img src="https://img.shields.io/cocoapods/l/WeScan.svg?style=flat"/>
 <img src="https://img.shields.io/cocoapods/p/WeScan.svg?style=flat"/>
 <img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat"/>
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat"/>
 </p>
- 
-**WeScan** makes it easy to add scanning functionalities to your iOS app! 
+
+**WeScan** makes it easy to add scanning functionalities to your iOS app!
 It's modelled after `UIImagePickerController`, which makes it a breeze to use.
 
 - [Features](#features)
-- [Example](#example)
+- [Demo](#demo)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [Communication](#communication)
 - [License](#license)
 
 ## Features
@@ -49,26 +47,17 @@ It's modelled after `UIImagePickerController`, which makes it a breeze to use.
 <br>
 
 ## Installation
-### Cocoapods
 
-[CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects.
+### Swift Package Manager
 
-To integrate **WeScan** into your Xcode project using CocoaPods, specify it in your `Podfile`:
+The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler. It is in early development, but WeScan does support its use on supported platforms.
 
-```rubygi
-source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '10.0'
-use_frameworks!
+Once you have your Swift package set up, adding WeScan as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift`.
 
-target '<Your Target Name>' do
-    pod 'WeScan', '>= 0.9'
-end
-```
-
-Then, run the following command:
-
-```bash
-$ pod install
+```swift
+dependencies: [
+    .package(url: "https://github.com/WeTransfer/WeScan.git", .upToNextMajor(from: "1.7.0"))
+]
 ```
 
 ### Carthage
@@ -104,7 +93,7 @@ Simply add the WeScan framework in the project's Embedded Binaries and Linked Fr
 
 ### Swift
 
-1. In order to make the framework available, add `import WeScan` at the top of the Swift source file 
+1. In order to make the framework available, add `import WeScan` at the top of the Swift source file
 
 2. In the Info.plist, add the `NSCameraUsageDescription` key and set the appropriate value in which you have to inform the user of the reason to allow the camera permission
 
@@ -153,6 +142,7 @@ present(scannerViewController, animated: true)
 5. In your class, add `@Class ImageScannerController;`
 
 #### Example Implementation
+
 ```objc
 ImageScannerController *scannerViewController = [[ImageScannerController alloc] init];
 [self presentViewController:scannerViewController animated:YES completion:nil];
