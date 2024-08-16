@@ -92,8 +92,9 @@ public final class ScannerViewController: UIViewController {
         CaptureSession.current.isEditing = false
         quadView.removeQuadrilateral()
         captureSessionManager?.start()
+#if !WESCAN_APP_EXTENSIONS
         UIApplication.shared.isIdleTimerDisabled = true
-
+#endif
         navigationController?.navigationBar.barStyle = .blackTranslucent
     }
 
@@ -105,8 +106,9 @@ public final class ScannerViewController: UIViewController {
 
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+#if !WESCAN_APP_EXTENSIONS
         UIApplication.shared.isIdleTimerDisabled = false
-
+#endif
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = originalBarStyle ?? .default
         captureSessionManager?.stop()

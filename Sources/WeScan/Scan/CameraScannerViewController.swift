@@ -66,7 +66,9 @@ public final class CameraScannerViewController: UIViewController {
         CaptureSession.current.isEditing = false
         quadView.removeQuadrilateral()
         captureSessionManager?.start()
+#if !WESCAN_APP_EXTENSIONS
         UIApplication.shared.isIdleTimerDisabled = true
+#endif
     }
 
     override public func viewDidLayoutSubviews() {
@@ -77,7 +79,9 @@ public final class CameraScannerViewController: UIViewController {
 
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+#if !WESCAN_APP_EXTENSIONS
         UIApplication.shared.isIdleTimerDisabled = false
+#endif
         captureSessionManager?.stop()
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
         if device.torchMode == .on {
