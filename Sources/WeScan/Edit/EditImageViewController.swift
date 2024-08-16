@@ -11,8 +11,9 @@ import UIKit
 
 /// A protocol that your delegate object will get results of EditImageViewController.
 public protocol EditImageViewDelegate: AnyObject {
+    func croppingWillStart()
     /// A method that your delegate object must implement to get cropped image.
-    func cropped(image: UIImage)
+    func cropped(image: UIImage, primaryQuad: Quadrilateral, adjustedQuad: Quadrilateral)
 }
 
 /// A view controller that manages edit image for scanning documents or pick image from photo library
@@ -24,6 +25,7 @@ public final class EditImageViewController: UIViewController {
 
     /// The detected quadrilateral that can be edited by the user. Uses the image's coordinates.
     private var quad: Quadrilateral
+    private var primaryQuad: Quadrilateral
     private var zoomGestureController: ZoomGestureController!
     private var quadViewWidthConstraint = NSLayoutConstraint()
     private var quadViewHeightConstraint = NSLayoutConstraint()
@@ -55,6 +57,7 @@ public final class EditImageViewController: UIViewController {
     public init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true, strokeColor: CGColor? = nil) {
         self.image = rotateImage ? image.applyingPortraitOrientation() : image
         self.quad = quad ?? EditImageViewController.defaultQuad(allOfImage: image)
+        self.primaryQuad = self.quad
         self.strokeColor = strokeColor
         super.init(nibName: nil, bundle: nil)
     }
@@ -119,6 +122,8 @@ public final class EditImageViewController: UIViewController {
         guard let quad = quadView.quad, let ciImage = CIImage(image: image) else {
             return
         }
+        
+        self.delegate?.croppingWillStart()
 
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
@@ -137,7 +142,10 @@ public final class EditImageViewController: UIViewController {
         ])
 
         let croppedImage = UIImage.from(ciImage: filteredImage)
-        delegate?.cropped(image: croppedImage)
+        
+        DispatchQueue.main.async {
+            self.delegate?.cropped(image: croppedImage, primaryQuad: self.primaryQuad, adjustedQuad: self.quad)
+        }
     }
 
     /// This function allow user to rotate image by 90 degree each and will reload image on image view.
